@@ -2,8 +2,8 @@ import {Raytracer,color} from './gl.js'
 import {Sphere,Material} from './figures.js'
 import {AmbientLight,DirectionalLight} from './lights'
 
-const width = 1200
-const height = 1200
+const width = 3000
+const height = 3000
 
 //Materiales
 const snow = new Material([0.65,0.65,0.6])
@@ -40,5 +40,9 @@ rtx.scena.push(new Sphere(0.10,[0.8,0,-4.35],nouse))
 rtx.scena.push(new Sphere(0.05,[0.5,0.10,-2],iris))
 rtx.scena.push(new Sphere(0.05,[0.5,-0.10,-2],iris))
 
+rtx.scena.push(new Sphere(0.025,[0.45,0.10,-1.75],mouth))
+rtx.scena.push(new Sphere(0.025,[0.45,-0.07,-1.75],mouth))
+
+
 rtx.glRender()
-rtx.glFinish('s')
+rtx.glFinish('RT1')
