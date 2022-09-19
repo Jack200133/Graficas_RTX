@@ -1,5 +1,5 @@
 
-import {suma_vec,getReflect,normal_V3,mult_vect,inversa,producto_punto,resta_vectores} from './mathe.js'
+import {magnitud_V3,suma_vec,getReflect,normal_V3,mult_vect,producto_punto,resta_vectores,inversa} from './mathe.js'
 
 const DIR_LIGHT = 0
 const POINT_LIGHT = 1
@@ -57,10 +57,13 @@ class PointLight{
     getColor(inter,raycast){
         const ligt_dir =normal_V3(resta_vectores(this.point, inter.punto))
 
+
+        //const light_distance = magnitud_V3(normal_V3(resta_vectores(this.point,inter.punto)))
         // att =1/(kc + kl*d+Kq *d*d)
-        //const atte = 1.0 / (this.constant + this.linear * inter.distancia + this.quad * inter.distancia**2)
+        //const atte = 1.0 / (this.constant + this.linear * light_distance + this.quad * light_distance**2)
+        //console.log(this.constant ,this.linear , light_distance, this.quad )
         const atte = 1
-        const intensity = Math.max(producto_punto(inter.normal,ligt_dir),0)*atte
+        const intensity = Math.max(producto_punto(inter.normal,ligt_dir)*atte,0)
 
 
 
@@ -70,10 +73,10 @@ class PointLight{
           intensity * this.color[2]
         ]
         const R = getReflect(inter.normal,ligt_dir)
-        const view_dir = normal_V3(resta_vectores(raytracer.camPos,inter.punto))
+        const view_dir = normal_V3(resta_vectores(raycast.camPos,inter.punto))
 
 
-        const spec_intensity = (this.intensity * Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
+        const spec_intensity = (intensity* Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
 
         const specColor = [ 
             spec_intensity * this.color[0],
@@ -82,7 +85,7 @@ class PointLight{
         ]
 
 
-        const shadow_inter = raytracer.glscene_intersect(inter.punto,ligt_dir,inter.sceneOBJ)? 1:0
+        const shadow_inter = raycast.glscene_intersect(inter.punto,ligt_dir,inter.sceneOBJ)? 1:0
         //const shadow_inter =0
         return mult_vect(suma_vec(diffuseColor,specColor),(1-shadow_inter))
     }

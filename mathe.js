@@ -223,8 +223,8 @@ const getMatrixInverse = (matrix) =>{
     return result
 }
 
-const getReflect = (normal,light) =>{
-    return normal_V3(resta_vectores(mult_vect(normal,2* producto_punto(normal,light)),light))
+const getReflect = (normal,direccion) =>{
+    return normal_V3(resta_vectores(mult_vect(normal,2* producto_punto(normal,direccion)),direccion))
 }
 
 

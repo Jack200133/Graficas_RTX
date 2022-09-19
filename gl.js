@@ -1,5 +1,12 @@
 import fs from 'fs'
-import {mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,inversa} from './mathe.js'
+import {getReflect,mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,invert_matrix,inversa} from './mathe.js'
+
+
+const OPAQUE = Bun.env.OPAQUE
+const REFLECTIVE = Bun.env.REFLECTIVE
+const TRANSPARENT = Bun.env.TRANSPARENT
+
+const MAX_RECURSION_DEPH =4
 
 const color = (r,g,b) =>{
   return [parseInt(b*255),parseInt(g*255),parseInt(r*255)]
@@ -114,12 +121,15 @@ class Raytracer {
     return res
   }
   
-  ray_cast(origen,direccion){
+  ray_cast(origen,direccion,sceneOBJ = null, recursion = 0){
     
-    const inter = this.glscene_intersect(origen,direccion,null)
+    const inter = this.glscene_intersect(origen,direccion,sceneOBJ)
   
-    if (inter === null){
-      return null
+    if (inter === null || recursion >= MAX_RECURSION_DEPH){
+      //console.log(this.clearColor)
+      return [this.clearColor[2]/255,
+      this.clearColor[1]/255,
+      this.clearColor[0]/255]
 
     }
     const mat = inter.sceneOBJ.material
@@ -127,10 +137,20 @@ class Raytracer {
     let finalColor = [0,0,0]
     const objColor = [...mat.diffuse]
 
-    this.lights.forEach(ligt => {
-      finalColor = suma_vec(finalColor,ligt.getColor(inter,this))
+    if (mat.matType === OPAQUE){
+      
+      this.lights.forEach(ligt => {
+        finalColor = suma_vec(finalColor,ligt.getColor(inter,this))
+  
+      })
+    }else if(mat.matType === REFLECTIVE){
+      
+      const ref = getReflect(inter.normal,inversa(direccion))
+      const refC = this.ray_cast(inter.punto,ref,inter.sceneOBJ,(recursion+1))
+      //console.log("REFC ",refC)
+      finalColor = refC
+    }
 
-    })
     finalColor = producto_vector_vector(finalColor,objColor)
     //console.log('final',finalColor)
       

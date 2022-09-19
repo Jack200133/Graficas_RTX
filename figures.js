@@ -3,6 +3,10 @@ import {normal_V3,mult_vect,suma_vec,resta_vectores,producto_punto,magnitud_V3} 
 const WHITE = [1,1,1]
 const BLACK = [0,0,0 ]
 
+const OPAQUE = Bun.env.OPAQUE
+const REFLECTIVE = Bun.env.REFLECTIVE
+const TRANSPARENT = Bun.env.TRANSPARENT
+
 class Intersect{
     constructor(sceneOBJ,distancia,punto,normal) {
         this.sceneOBJ = sceneOBJ
@@ -46,8 +50,9 @@ class Sphere {
 }
 
 class Material{
-    constructor(diffuse = WHITE,spec = 1.0) {
+    constructor(diffuse = WHITE,spec = 1.0,matType = OPAQUE) {
         this.diffuse = diffuse
+        this.matType = matType
         this.spec = spec
     }
 }
