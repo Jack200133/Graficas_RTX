@@ -5,8 +5,8 @@ const OPAQUE = Bun.env.OPAQUE
 const REFLECTIVE = Bun.env.REFLECTIVE
 const TRANSPARENT = Bun.env.TRANSPARENT
 
-const width = 4000
-const height = 4000
+const width = 1000
+const height = 1000
 
 //Materiales
 const nouse = new Material([0.94,0.32,0.21],100)

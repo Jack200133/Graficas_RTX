@@ -288,16 +288,16 @@ class Raytracer {
     buffer.writeUInt32LE(0, 46);
     buffer.writeUInt32LE(0, 50);
 
-    var byteIndex = 54
-    for (var x = 0; x < this.width; x++) {
-      for (var y = 0; y < this.height; y++) {
+    let byteIndex = 54
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
         buffer.writeUInt8(this.pixels[x][y][0], byteIndex++);
         buffer.writeUInt8(this.pixels[x][y][1], byteIndex++);
         buffer.writeUInt8(this.pixels[x][y][2], byteIndex++);
 
      }
     }
-    
+ 
     fs.writeFile(`${filename}.bmp`,buffer,(error)=>{
         if(error) {
             console.error(error)
