@@ -223,4 +223,9 @@ const getMatrixInverse = (matrix) =>{
     return result
 }
 
-export {producto_vector_vector,mult_vect,suma_vec,magnitud_V3,getMatrixInverse,invert_matrix,inversa,producto_punto,normal_V3,resta_vectores,productos_matrices,producto_matriz_vector,producto_cruz}
+const getReflect = (normal,light) =>{
+    return normal_V3(resta_vectores(mult_vect(normal,2* producto_punto(normal,light)),light))
+}
+
+
+export {getReflect,producto_vector_vector,mult_vect,suma_vec,magnitud_V3,getMatrixInverse,invert_matrix,inversa,producto_punto,normal_V3,resta_vectores,productos_matrices,producto_matriz_vector,producto_cruz}

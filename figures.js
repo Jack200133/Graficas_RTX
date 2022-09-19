@@ -46,9 +46,9 @@ class Sphere {
 }
 
 class Material{
-    constructor(diffuse = WHITE) {
+    constructor(diffuse = WHITE,spec = 1.0) {
         this.diffuse = diffuse
-        
+        this.spec = spec
     }
 }
 

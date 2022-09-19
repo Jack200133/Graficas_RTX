@@ -126,43 +126,20 @@ class Raytracer {
       
     let finalColor = [0,0,0]
     const objColor = [...mat.diffuse]
-    let dirLightColor = [0,0,0]
-    let ambLigtColor = [0,0,0]
-
 
     this.lights.forEach(ligt => {
-      if(ligt.type ===0){
-        const ligt_dir = inversa(ligt.direction)
-        
-        const intensity = Math.max(producto_punto(inter.normal,ligt_dir),0)
+      finalColor = suma_vec(finalColor,ligt.getColor(inter,this))
 
-        const diffuseColor = [ 
-          intensity * ligt.color[0]*ligt.intensity,
-          intensity * ligt.color[1]*ligt.intensity,
-          intensity * ligt.color[2]*ligt.intensity
-        ]
-
-        const shadow_inter = this.glscene_intersect(inter.punto,ligt_dir,inter.sceneOBJ)? 1:0
-        //const shadow_inter =0
-        dirLightColor = mult_vect(diffuseColor,(1-shadow_inter))
-       
-      }
-      else if(ligt.type ===2){
-        ambLigtColor = mult_vect(ligt.color,ligt.intensity)
-      }
-
-      finalColor = producto_vector_vector(suma_vec(dirLightColor,ambLigtColor),objColor)
-      //console.log('final',finalColor)
-      
-      const r = Math.min(1,finalColor[0])
-      const g = Math.min(1,finalColor[1])
-      const b = Math.min(1,finalColor[2])
-      finalColor[0] = r
-      finalColor[1] = g
-      finalColor[2] = b
-      
-      return (finalColor)
     })
+    finalColor = producto_vector_vector(finalColor,objColor)
+    //console.log('final',finalColor)
+      
+    const r = Math.min(1,finalColor[0])
+    const g = Math.min(1,finalColor[1])
+    const b = Math.min(1,finalColor[2])
+    finalColor[0] = r
+    finalColor[1] = g
+    finalColor[2] = b
     return (finalColor)
 
     //return inter.sceneOBJ.material.diffuse
