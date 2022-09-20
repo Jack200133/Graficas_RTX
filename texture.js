@@ -1,53 +1,52 @@
 import fs from 'fs'
 import {Buffer } from 'node:buffer'
+import {normal_V3} from './mathe.js'
 
 
-class Texture{
-    constructor(filename){
-        //MIN 1:21
-        this.filename = filename
-        this.getalgo()
+const Texture = (filename) =>{
+    const der = fs.readFileSync(`${filename}.bmp`)
 
+    //console.log("A",data)
+    //const headerSize = data.read(4)
+
+    const dat = Buffer.from(der)
+
+    //console.log("A ",headerSize)
+    //this.data = data
+    //console.log(dat)
+    const headersize = dat.readUInt32LE(10)
+    const width = dat.readUInt32LE(18)
+    const height = dat.readUInt32LE(22)
+
+    const pixels = []
+    let byteIndex = headersize
+    for (let x = 0; x < width; x++) {
+        const row = []
+        for (let y = 0; y < height; y++) {
+            const b = dat.readUInt8(byteIndex++)/255;
+            const g = dat.readUInt8(byteIndex++)/255;
+            const r = dat.readUInt8(byteIndex++)/255;
+            row.push([r,g,b])
+        }
+        
+        pixels.push(row)
     }
-
-    getfile(filename){
-        fs.readFile(`${filename}.bmp`,function(error,data){
-            //console.log("A",data)
-            //const headerSize = data.read(4)
-
-            const dat = Buffer.from(data)
-
-            //console.log("A ",headerSize)
-            //this.data = data
-            //console.log(dat)
-            const headersize = dat.readUInt32LE(10)
-            this.width = dat.readUInt32LE(18)
-            this.height = dat.readUInt32LE(22)
-
-            this.pixels = []
-            let byteIndex = headersize
-            for (let x = 0; x < this.width; x++) {
-                const row = []
-                for (let y = 0; y < this.height; y++) {
-                    const b = dat.readUInt8(byteIndex++)/255;
-                    const g = dat.readUInt8(byteIndex++)/255;
-                    const r = dat.readUInt8(byteIndex++)/255;
-                    row.push([r,g,b])
-               }
-               
-               this.pixels.push(row)
-            }
-            console.log('CONS',this.width,this.height)
-
-        }) 
-    }
-
-    async getalgo(){
-       const  t = await this.getfile(this.filename)
-       console.log(this.width)
-    }
+    console.log('CONS',width,height)
+    const dater= {pixels,width,headersize,height}
+    return dater
 
 }
 
-const Text = new Texture('parkingLot')
-console.log('E',Text.width,Text.height)
+
+const getEnvColor=(texture,dir)=>{
+
+    const dir_norm = normal_V3(dir)
+    const x = parseInt((Math.atan2(dir_norm[2],dir_norm[0])/(2*Math.PI)+0.5)*texture.width)
+    const y = parseInt(Math.acos(-dir_norm[1])/Math.PI*texture.height)
+
+    return texture.pixels[x][y]
+}
+
+
+
+export {Texture,getEnvColor}

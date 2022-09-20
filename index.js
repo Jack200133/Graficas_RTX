@@ -1,5 +1,6 @@
 import {Raytracer,color} from './gl.js'
 import {Sphere,Material} from './figures.js'
+import {Texture,getEnvColor} from './texture.js'
 import {AmbientLight,DirectionalLight,PointLight} from './lights.js'
 const OPAQUE = Bun.env.OPAQUE
 const REFLECTIVE = Bun.env.REFLECTIVE
@@ -17,6 +18,9 @@ const bluemirror = new Material([0.2,0.2,0.9],16,REFLECTIVE)
 const greenmirror = new Material([0.2,0.9,0.2],16,REFLECTIVE)
 const yellowmirror = new Material([0.9,0.9,0.2],16,REFLECTIVE)
 
+const Textpixels = Texture('parkingLot')
+const mil = getEnvColor(Textpixels,[1,1,1])
+console.log('E',Textpixels.height,mil)
 
 const rtx = new Raytracer()
 rtx.glCreateWindow(width,height)
