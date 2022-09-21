@@ -1,6 +1,6 @@
 import fs from 'fs'
-import {getReflect,mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,invert_matrix,inversa} from './mathe.js'
-
+import {refractVector,Fresnel,getReflect,mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,invert_matrix,inversa, resta_vectores} from './mathe.js'
+import {getEnvColor} from './texture.js'
 
 const OPAQUE = Bun.env.OPAQUE
 const REFLECTIVE = Bun.env.REFLECTIVE
@@ -38,6 +38,7 @@ class Raytracer {
     this.camPos = [0,0,0]
     this.scena = []
     this.lights = []
+    this.envMap = null
     this.nearPlane = 0.1
     this.glViewPort(0,0,4,4)
     this.clearColor = color(0,0,0)
@@ -94,9 +95,10 @@ class Raytracer {
   }
 
   glPoint(x,y,crl=null){
-    if((this.min_width<=x<=this.mx_width)&&(this.min_height<=y<=this.mx_height)){
+    //console.log(x,y,crl)
+    if((this.min_width<=y<=this.mx_width)&&(this.min_height<=x<=this.mx_height)){
       if(crl!==null){
-        this.pixels[x][y] = crl
+        this.pixels[y][x] = crl
       }else{
 
         this.pixels[x][y] = this.currentColor
@@ -127,9 +129,15 @@ class Raytracer {
   
     if (inter === null || recursion >= MAX_RECURSION_DEPH){
       //console.log(this.clearColor)
-      return [this.clearColor[2]/255,
-      this.clearColor[1]/255,
-      this.clearColor[0]/255]
+      if (this.envMap){
+        //console.log(getEnvColor(this.envMap,direccion),direccion)
+        return getEnvColor(this.envMap,direccion)
+      }else{
+        
+        return [this.clearColor[2]/255,
+        this.clearColor[1]/255,
+        this.clearColor[0]/255]
+      }
 
     }
     const mat = inter.sceneOBJ.material
@@ -140,15 +148,54 @@ class Raytracer {
     if (mat.matType === OPAQUE){
       
       this.lights.forEach(ligt => {
-        finalColor = suma_vec(finalColor,ligt.getColor(inter,this))
+        const diffuse = ligt.getDiffuseColor(inter,this)
+        const specColor = ligt.getSpecColor(inter,this)
+        const shadow = ligt.getShadowIntensity(inter,this)
+
+        const eleColor = mult_vect(suma_vec(diffuse,specColor),(1-shadow))
+
+        //finalColor = suma_vec(finalColor,ligt.getColor(inter,this))
+        finalColor = suma_vec(finalColor,eleColor)
   
       })
     }else if(mat.matType === REFLECTIVE){
       
       const ref = getReflect(inter.normal,inversa(direccion))
       const refC = this.ray_cast(inter.punto,ref,inter.sceneOBJ,(recursion+1))
+
+      let specColor = [0,0,0]
+
+      this.lights.forEach(ligt => {
+        specColor = suma_vec(specColor,ligt.getSpecColor(inter,this))
+      })
+      finalColor = suma_vec(refC,specColor)
+
       //console.log("REFC ",refC)
-      finalColor = refC
+      //finalColor = refC
+    }else if(mat.matType === TRANSPARENT){
+      const outsideray = producto_punto(direccion,inter.normal)<0
+      const bias = mult_vect(inter.normal,0.001)
+      const ref = getReflect(inter.normal,inversa(direccion))
+      //console.log(outsideray,bias,ref)
+      const refOrigin =outsideray?suma_vec(inter.punto,bias):resta_vectores(inter.punto,bias)
+      
+      const refC = this.ray_cast(refOrigin,ref,null,(recursion+1))
+      const kr = Fresnel(inter.normal,direccion,mat.ior)
+      //console.log(refC,kr)
+      let specColor = [0,0,0]
+      let refracColor = [0,0,0]
+      this.lights.forEach(ligt => {
+        specColor = suma_vec(specColor,ligt.getSpecColor(inter,this))
+      })
+      if (kr <1){
+        //Calcular refraccion
+
+        const refract = refractVector(inter.normal,direccion,mat.ior)
+        const refractOrg = outsideray? suma_vec(inter.punto,bias):resta_vectores(inter.punto,bias)
+        refracColor = this.ray_cast(refractOrg,refract,null,recursion+1)
+      }
+
+      finalColor =suma_vec(suma_vec(mult_vect(refC,kr),mult_vect(refracColor,(1-kr))),specColor)
     }
 
     finalColor = producto_vector_vector(finalColor,objColor)

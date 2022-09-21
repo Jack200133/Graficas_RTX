@@ -227,5 +227,61 @@ const getReflect = (normal,direccion) =>{
     return normal_V3(resta_vectores(mult_vect(normal,2* producto_punto(normal,direccion)),direccion))
 }
 
+const refractVector = (normal,direccion,ior) =>{
+    //Snells Law
+    let cosi = Math.max(-1,Math.min(1,producto_punto(direccion,normal)))
+    let non = normal
+    let etai = 1
+    let etat = ior
+    //console.log(cosi,etai,etat)
+    if (cosi < 0){
+        cosi = -cosi 
+    }else{
+        etai,etat = etat,etai
+        non= inversa(normal)
+    }
+    //console.log('w',cosi,etai,etat)
+    const eta = etai/etat
+    const k = 1 - (eta **2) * (1- (cosi **2))
+    if (k < 0){
+        // Total Internal Reflection
+        return null
+    }
+    const refractvect = suma_vec(mult_vect(direccion,eta),mult_vect(non,eta*cosi-(k**0.5)))
+    return refractvect
+}
 
-export {getReflect,producto_vector_vector,mult_vect,suma_vec,magnitud_V3,getMatrixInverse,invert_matrix,inversa,producto_punto,normal_V3,resta_vectores,productos_matrices,producto_matriz_vector,producto_cruz}
+const Fresnel = (normal,direccion,ior) =>{
+    //Fresnel Equation
+    let cosi = Math.max(-1,Math.min(1,producto_punto(direccion,normal)))
+    const non = []
+    let etai = 1
+    let etat = ior
+    const etai2 = 1
+    const etat2 = ior
+
+    
+    if (cosi < 0){
+        cosi = -cosi
+    }else{
+        etai = etat2
+        etat = etai2
+
+    }
+
+    const sint = etai/etat * (Math.max(0,1-cosi**2)**0.5)
+
+    if (sint >=1){
+        return null
+    }
+
+    const cost =Math.max(0,1-sint**2)**0.5
+    cosi = Math.max(cosi)
+
+    const Rs = ((etat * cosi) - (etai*cost))/((etat *cosi) + (etai*cost))
+    const Rp = ((etai * cosi) - (etat*cost))/((etai *cosi) + (etat*cost))
+
+    return (Rs**2 + Rp**2)
+}
+
+export {refractVector,Fresnel,getReflect,producto_vector_vector,mult_vect,suma_vec,magnitud_V3,getMatrixInverse,invert_matrix,inversa,producto_punto,normal_V3,resta_vectores,productos_matrices,producto_matriz_vector,producto_cruz}

@@ -50,10 +50,11 @@ class Sphere {
 }
 
 class Material{
-    constructor(diffuse = WHITE,spec = 1.0,matType = OPAQUE) {
+    constructor(diffuse = WHITE,spec = 1.0,matType = OPAQUE,ior = 1.0) {
         this.diffuse = diffuse
         this.matType = matType
         this.spec = spec
+        this.ior = ior
     }
 }
 

@@ -20,18 +20,18 @@ const Texture = (filename) =>{
 
     const pixels = []
     let byteIndex = headersize
-    for (let x = 0; x < width; x++) {
+    //console.log(byteIndex)
+    for (let x = 0; x < height; x++) {
         const row = []
-        for (let y = 0; y < height; y++) {
+        for (let y = 0; y < width; y++) {
             const b = dat.readUInt8(byteIndex++)/255;
             const g = dat.readUInt8(byteIndex++)/255;
             const r = dat.readUInt8(byteIndex++)/255;
             row.push([r,g,b])
         }
-        
+        //console.log(x,height,row)
         pixels.push(row)
     }
-    console.log('CONS',width,height)
     const dater= {pixels,width,headersize,height}
     return dater
 
@@ -41,10 +41,10 @@ const Texture = (filename) =>{
 const getEnvColor=(texture,dir)=>{
 
     const dir_norm = normal_V3(dir)
+    const nrg = dir_norm[1]
     const x = parseInt((Math.atan2(dir_norm[2],dir_norm[0])/(2*Math.PI)+0.5)*texture.width)
-    const y = parseInt(Math.acos(-dir_norm[1])/Math.PI*texture.height)
-
-    return texture.pixels[x][y]
+    const y = parseInt(Math.acos(-nrg)/Math.PI*texture.height)
+    return texture.pixels[y][x]
 }
 
 
