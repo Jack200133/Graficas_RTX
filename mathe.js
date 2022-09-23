@@ -254,18 +254,16 @@ const refractVector = (normal,direccion,ior) =>{
 const Fresnel = (normal,direccion,ior) =>{
     //Fresnel Equation
     let cosi = Math.max(-1,Math.min(1,producto_punto(direccion,normal)))
-    const non = []
     let etai = 1
     let etat = ior
     const etai2 = 1
     const etat2 = ior
 
     
-    if (cosi < 0){
-        cosi = -cosi
-    }else{
-        etai = etat2
-        etat = etai2
+    if (cosi > 0){
+        etai,etat = etat,etai
+        // etai = etat2
+        // etat = etai2
 
     }
 
@@ -276,12 +274,12 @@ const Fresnel = (normal,direccion,ior) =>{
     }
 
     const cost =Math.max(0,1-sint**2)**0.5
-    cosi = Math.max(cosi)
+    cosi = Math.abs(cosi)
 
     const Rs = ((etat * cosi) - (etai*cost))/((etat *cosi) + (etai*cost))
     const Rp = ((etai * cosi) - (etat*cost))/((etai *cosi) + (etat*cost))
 
-    return (Rs**2 + Rp**2)
+    return (Rs**2 + Rp**2)/2.0
 }
 
 export {refractVector,Fresnel,getReflect,producto_vector_vector,mult_vect,suma_vec,magnitud_V3,getMatrixInverse,invert_matrix,inversa,producto_punto,normal_V3,resta_vectores,productos_matrices,producto_matriz_vector,producto_cruz}

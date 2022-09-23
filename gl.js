@@ -2,11 +2,10 @@ import fs from 'fs'
 import {refractVector,Fresnel,getReflect,mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,invert_matrix,inversa, resta_vectores} from './mathe.js'
 import {getEnvColor} from './texture.js'
 
-const OPAQUE = Bun.env.OPAQUE
-const REFLECTIVE = Bun.env.REFLECTIVE
-const TRANSPARENT = Bun.env.TRANSPARENT
-
-const MAX_RECURSION_DEPH =4
+const OPAQUE = 0
+const REFLECTIVE = 1
+const TRANSPARENT = 2
+const MAX_RECURSION_DEPH =3
 
 const color = (r,g,b) =>{
   return [parseInt(b*255),parseInt(g*255),parseInt(r*255)]

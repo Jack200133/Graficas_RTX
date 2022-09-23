@@ -36,7 +36,7 @@ class DirectionalLight{
         const view_dir = normal_V3(resta_vectores(raytracer.camPos,inter.punto))
 
 
-        const spec_intensity = (this.intensity * Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
+        const spec_intensity = this.intensity *( Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
 
         const specColor = [ 
             spec_intensity * this.color[0],

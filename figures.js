@@ -3,10 +3,10 @@ import {normal_V3,mult_vect,suma_vec,resta_vectores,producto_punto,magnitud_V3} 
 const WHITE = [1,1,1]
 const BLACK = [0,0,0 ]
 
-const OPAQUE = Bun.env.OPAQUE
-const REFLECTIVE = Bun.env.REFLECTIVE
-const TRANSPARENT = Bun.env.TRANSPARENT
 
+const OPAQUE = 0
+const REFLECTIVE = 1
+const TRANSPARENT = 2
 class Intersect{
     constructor(sceneOBJ,distancia,punto,normal) {
         this.sceneOBJ = sceneOBJ

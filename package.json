@@ -1,0 +1,21 @@
+{
+  "type": "module",
+  "name": "graficas_rtx",
+  "version": "1.0.0",
+  "description": "Codigo realizado 100% en JS y ejecutado en BUN, para probarlo se necesitara instalar BUN y ejecutar $bun index.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jack200133/Graficas_RTX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jack200133/Graficas_RTX/issues"
+  },
+  "homepage": "https://github.com/Jack200133/Graficas_RTX#readme"
+}
