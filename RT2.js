@@ -7,18 +7,18 @@ import {AmbientLight,DirectionalLight,PointLight} from './lights.js'
 const OPAQUE = 0
 const REFLECTIVE = 1
 const TRANSPARENT = 2
-const width = 2000
-const height =2000
+const width = 5000
+const height =5000
 //Materiales
 const blacmirror = new Material([0.3,0.3,0.3],16,REFLECTIVE)
 const yellowmirror = new Material([0.8,0.8,0.3],16,REFLECTIVE)
 const blood = new Material([0.9,0.5,0.5],64,TRANSPARENT,1.3010)
-const saphiro = new Material([0.0588,0.3215,0.73],150,TRANSPARENT,1.779)
+const saphiro = new Material([0.3588,0.6215,0.8],150,TRANSPARENT,1.779)
 const blue = new Material([0.2,0.73,1],10,OPAQUE)
 const green = new Material([0,0.6039,0.09],10,OPAQUE)
 
 
-const Textpixels = Texture('parkingLot')
+const Textpixels = Texture('playa')
 const mil = getEnvColor(Textpixels,[1,1,1])
 
 
