@@ -261,9 +261,9 @@ const Fresnel = (normal,direccion,ior) =>{
 
     
     if (cosi > 0){
-        etai,etat = etat,etai
-        // etai = etat2
-        // etat = etai2
+        //etai,etat = etat,etai
+        etai = etat2
+        etat = etai2
 
     }
 

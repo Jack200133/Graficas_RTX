@@ -95,17 +95,17 @@ class PointLight{
         this.linear = linear
         this.quad = quad
         this.type = POINT_LIGHT
-        this.light_dir = normal_V3(resta_vectores(this.point, inter.punto))
+        //this.light_dir = normal_V3(resta_vectores(this.point, inter.punto))
     }
 
         
     getDiffuseColor(inter,raytracer){
-        const light_distance = magnitud_V3(normal_V3(resta_vectores(this.point,inter.punto)))
+        const light_dir = normal_V3(resta_vectores(this.point,inter.punto))
         // att =1/(kc + kl*d+Kq *d*d)
         //const atte = 1.0 / (this.constant + this.linear * light_distance + this.quad * light_distance**2)
         //console.log(this.constant ,this.linear , light_distance, this.quad )
         const atte = 1
-        const intensity = Math.max(producto_punto(inter.normal,ligt_dir)*atte,0)
+        const intensity = Math.max(producto_punto(inter.normal,light_dir)*atte,0)
 
 
 
@@ -118,10 +118,12 @@ class PointLight{
     }
 
     getSpecColor(inter,raytracer){
-        const R = getReflect(inter.normal,ligt_dir)
-        const view_dir = normal_V3(resta_vectores(raycast.camPos,inter.punto))
+        const light_distance = normal_V3(resta_vectores(this.point,inter.punto))
+        const R = getReflect(inter.normal,light_distance)
+        const view_dir = normal_V3(resta_vectores(raytracer.camPos,inter.punto))
 
-
+        const atte = 1.0
+        const intensity = Math.max((producto_punto(inter.normal,light_distance)*atte),0)
         const spec_intensity = (intensity* Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
 
         const specColor = [ 
@@ -134,10 +136,17 @@ class PointLight{
     }
 
     getShadowIntensity(inter,raytracer){
-        const ligt_dir = inversa(this.direction)
-        const shadow_inter = raytracer.glscene_intersect(inter.punto,ligt_dir,inter.sceneOBJ)? 1:0
+        const l = resta_vectores(this.point,inter.punto)
+        const ligt_dis = magnitud_V3(l)
+        const ligt_dir = normal_V3(l)
+        const shadow_inter = raytracer.glscene_intersect(inter.punto,ligt_dir,inter.sceneOBJ)
+        if (shadow_inter){
+            if (shadow_inter.distancia < ligt_dis){
+                return 1
+            }
+        }
         //const shadow_inter =0
-        return shadow_inter
+        return 0
     }
 
     getColor(inter,raycast){

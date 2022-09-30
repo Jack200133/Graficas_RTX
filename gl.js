@@ -100,7 +100,7 @@ class Raytracer {
         this.pixels[y][x] = crl
       }else{
 
-        this.pixels[x][y] = this.currentColor
+        this.pixels[y][x] = this.currentColor
       }
       
     }
