@@ -190,7 +190,7 @@ class Raytracer {
         //Calcular refraccion
 
         const refract = refractVector(inter.normal,direccion,mat.ior)
-        const refractOrg = outsideray? suma_vec(inter.punto,bias):resta_vectores(inter.punto,bias)
+        const refractOrg = outsideray? resta_vectores(inter.punto,bias):suma_vec(inter.punto,bias)
         refracColor = this.ray_cast(refractOrg,refract,null,recursion+1)
       }
 

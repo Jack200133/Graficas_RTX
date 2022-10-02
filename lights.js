@@ -124,7 +124,7 @@ class PointLight{
 
         const atte = 1.0
         const intensity = Math.max((producto_punto(inter.normal,light_distance)*atte),0)
-        const spec_intensity = (intensity* Math.max(producto_punto(view_dir,R),0))**inter.sceneOBJ.material.spec
+        const spec_intensity = atte* Math.max(producto_punto(view_dir,R),0)**inter.sceneOBJ.material.spec
 
         const specColor = [ 
             spec_intensity * this.color[0],

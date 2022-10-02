@@ -1,4 +1,4 @@
-import {normal_V3,mult_vect,suma_vec,resta_vectores,producto_punto,magnitud_V3} from './mathe.js'
+import {normal_V3,mult_vect,producto_cruz,suma_vec,resta_vectores,producto_punto,magnitud_V3,inversa} from './mathe.js'
 
 const WHITE = [1,1,1]
 const BLACK = [0,0,0 ]
@@ -147,4 +147,54 @@ class AABB{
     }
 
 }
-export {Sphere,Material,Plane,AABB}
+
+class Triangle{
+    constructor(A,B,C,material) {
+        this.A = A
+        this.B = B
+        this.C = C
+        this.material = material
+        this.normal = normal_V3(inversa(producto_cruz(resta_vectores(B,A),resta_vectores(C,A))))
+    }
+
+    ray_intersect(orig,dir){
+        const edge1 = resta_vectores(this.B,this.A)
+        const edge2 = resta_vectores(this.C,this.A)
+        const h = producto_cruz(dir,edge2)
+        const a = producto_punto(edge1,h)
+        if (a > -1e-6 && a < 1e-6){
+            return null
+        }
+        const f = 1/a
+        const s = resta_vectores(orig,this.A)
+        const u = f * producto_punto(s,h)
+        if (u < 0 || u > 1){
+            return null
+        }
+        const q = producto_cruz(s,edge1)
+        const v = f * producto_punto(dir,q)
+        if (v < 0 || u+v > 1){
+            return null
+        }
+        const t = f * producto_punto(edge2,q)
+        if (t > 1e-6){
+            const P = suma_vec(orig,mult_vect(dir,t))
+            return new Intersect(this,t,P,this.normal)
+        }
+        return null
+    }
+}
+
+class TriangleBarycentric{
+    constructor(v0,v1,v2,verts=[],txtC=[],normals=[],material) {
+        this.v0 = v0
+        this.v1 = v1
+        this.v2 = v2
+        this.material = material
+        this.verts = verts
+        this.txtC = txtC
+        this.normals = normals
+    }
+}
+
+export {Sphere,Material,Plane,AABB,Triangle}
