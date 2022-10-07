@@ -8,11 +8,12 @@ const OPAQUE = 0
 const REFLECTIVE = 1
 const TRANSPARENT = 2
 class Intersect{
-    constructor(sceneOBJ,distancia,punto,normal) {
+    constructor(sceneOBJ,distancia,punto,normal,textcoords) {
         this.sceneOBJ = sceneOBJ
         this.distancia = distancia
         this.punto = punto
         this.normal = normal
+        this.textcoords = textcoords
         
     }
 }
@@ -45,16 +46,23 @@ class Sphere {
         const mult = mult_vect(direccion,t0)
         const P = suma_vec(origen,mult)
         const normal = normal_V3(resta_vectores(P,this.centro))
-        return new Intersect(this,t0,P,normal,direccion)
+
+        const u = 1 - (Math.atan2(normal[2],normal[0])/(2*Math.PI)+0.5)
+        const v = Math.acos(-normal[1])/Math.PI
+
+        const textcoords = [u,v]
+
+        return new Intersect(this,t0,P,normal,textcoords)
     }
 }
 
 class Material{
-    constructor(diffuse = WHITE,spec = 1.0,matType = OPAQUE,ior = 1.0) {
+    constructor(diffuse = WHITE,spec = 1.0,matType = OPAQUE,ior = 1.0,texture = null) {
         this.diffuse = diffuse
         this.matType = matType
         this.spec = spec
         this.ior = ior
+        this.texture = texture
     }
 }
 
@@ -115,7 +123,8 @@ class AABB{
     ray_intersect(orig,dir){
         let intersect = null
         let closest = Infinity
-
+        let v =0
+        let u =0
         for (let plane of this.planes){
             const inter = plane.ray_intersect(orig,dir)
             if (inter){
@@ -128,6 +137,20 @@ class AABB{
                             if (inter.distancia < closest){
                                 closest = inter.distancia
                                 intersect = inter
+
+                                
+
+
+                                if (Math.abs(inter.normal[0])>0){
+                                    u = (planePoint[2] - this.boundsMIN[2])/(this.boundsMAX[2] - this.boundsMIN[2])
+                                    v = (planePoint[1] - this.boundsMIN[1])/(this.boundsMAX[1] - this.boundsMIN[1])
+                                }else if (Math.abs(inter.normal[1])>0){
+                                    u = (planePoint[0] - this.boundsMIN[0])/(this.boundsMAX[0] - this.boundsMIN[0])
+                                    v = (planePoint[2] - this.boundsMIN[2])/(this.boundsMAX[2] - this.boundsMIN[2])
+                                }else if (Math.abs(inter.normal[2])>0){
+                                    u = (planePoint[0] - this.boundsMIN[0])/(this.boundsMAX[0] - this.boundsMIN[0])
+                                    v = (planePoint[1] - this.boundsMIN[1])/(this.boundsMAX[1] - this.boundsMIN[1])
+                                }
                             }
                         }
 
@@ -142,7 +165,7 @@ class AABB{
         if (intersect === null){
             return null
         }
-        return new Intersect(this,closest,intersect.punto,intersect.normal)
+        return new Intersect(this,closest,intersect.punto,intersect.normal,[u,v])
         
     }
 
@@ -179,21 +202,10 @@ class Triangle{
         const t = f * producto_punto(edge2,q)
         if (t > 1e-6){
             const P = suma_vec(orig,mult_vect(dir,t))
-            return new Intersect(this,t,P,this.normal)
+            
+            return new Intersect(this,t,P,this.normal,[u,v])
         }
         return null
-    }
-}
-
-class TriangleBarycentric{
-    constructor(v0,v1,v2,verts=[],txtC=[],normals=[],material) {
-        this.v0 = v0
-        this.v1 = v1
-        this.v2 = v2
-        this.material = material
-        this.verts = verts
-        this.txtC = txtC
-        this.normals = normals
     }
 }
 

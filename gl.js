@@ -1,6 +1,6 @@
 import fs from 'fs'
 import {refractVector,Fresnel,getReflect,mult_vect,producto_vector_vector,suma_vec,producto_punto,normal_V3,invert_matrix,inversa, resta_vectores} from './mathe.js'
-import {getEnvColor} from './texture.js'
+import {getEnvColor,getColor} from './texture.js'
 
 const OPAQUE = 0
 const REFLECTIVE = 1
@@ -199,7 +199,15 @@ class Raytracer {
 
     finalColor = producto_vector_vector(finalColor,objColor)
     //console.log('final',finalColor)
-      
+    
+    if (mat.texture !==null && inter.texCoord!==null){
+      const texColor = getColor(mat.texture,inter.textcoords[0],inter.textcoords[1])
+      if (texColor){
+
+        finalColor = producto_vector_vector(finalColor,texColor)
+      }
+    }
+
     const r = Math.min(1,finalColor[0])
     const g = Math.min(1,finalColor[1])
     const b = Math.min(1,finalColor[2])

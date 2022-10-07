@@ -47,6 +47,17 @@ const getEnvColor=(texture,dir)=>{
     return texture.pixels[y][x]
 }
 
+const getColor=(texture,u,v)=>{
+    if(u>=0 && u<=1 && v>=0 && v<=1){
+        const x = parseInt(u*texture.width)
+        const y = parseInt(v*texture.height)
+        return texture.pixels[y][x]
+    }
+    else{
+        return null
+    }
+}
 
 
-export {Texture,getEnvColor}
+
+export {Texture,getEnvColor,getColor}
