@@ -1,5 +1,5 @@
 import {Raytracer,color} from './gl.js'
-import {Sphere,Material,Plane,AABB,Triangle} from './figures.js'
+import {Sphere,Material,Plane,AABB,Triangle,Object3D} from './figures.js'
 import {Texture,getEnvColor} from './texture.js'
 import {AmbientLight,DirectionalLight,PointLight} from './lights.js'
 
@@ -7,8 +7,8 @@ import {AmbientLight,DirectionalLight,PointLight} from './lights.js'
 const OPAQUE = 0
 const REFLECTIVE = 1
 const TRANSPARENT = 2
-const width = 3000
-const height =3000
+const width = 2000
+const height =2000
 //Materiales
 
 const blue = new Material([0.2,0.73,1],10,OPAQUE)
@@ -46,7 +46,8 @@ rtx.lights.push(new AmbientLight(0.1))
 //rtx.lights.push(new PointLight([0.5,0.30,2]))
 rtx.lights.push(new DirectionalLight([-1,-1,-1],0.9))
 
- rtx.scena.push(new Triangle([-2,1,-10],[0,1,-13],[-1,-1,-10],marble))
+rtx.scena.push(new Object3D('model',[0,0,-40],[10,10,10],[0,0,0],red))
+//rtx.scena.push(new Triangle([-2,1,-10],[0,1,-13],[-1,-1,-10],marble))
 // rtx.scena.push(new Triangle([0,-3,-10],[-2,-3,-10],[-1,-1,-10],glass))
 // rtx.scena.push(new Triangle([0,0,-5],[0,2,-5],[1,1,-10],mirror))
 //rtx.scena.push(new AABB([-5,1,-20],[5,5,5],marble))

@@ -1,4 +1,5 @@
-import {normal_V3,mult_vect,producto_cruz,suma_vec,resta_vectores,producto_punto,magnitud_V3,inversa} from './mathe.js'
+import {producto_matriz_vector,productos_matrices,normal_V3,mult_vect,producto_cruz,suma_vec,resta_vectores,producto_punto,magnitud_V3,inversa} from './mathe.js'
+import {Obj} from './obj.js'
 
 const WHITE = [1,1,1]
 const BLACK = [0,0,0 ]
@@ -153,13 +154,8 @@ class AABB{
                                 }
                             }
                         }
-
                     }
-                    // intersect = inter
-                    // closest = inter.t
                 }
-                // intersect = inter
-                // closest = inter.t
             }
         }
         if (intersect === null){
@@ -209,4 +205,92 @@ class Triangle{
     }
 }
 
-export {Sphere,Material,Plane,AABB,Triangle}
+class Object3D{
+    constructor(filename,translate=[0,0,0],scale=[1,1,1],rotate=[0,0,0],material) {
+        this.obj = new Obj(filename)
+        this.material = material
+        this.triangles = []
+        const modelMatrix = this.glCreateObjectMatrix(translate,scale,rotate)
+
+        for (let face of this.obj.faces){
+            const A = this.glTransformVertex(this.obj.vertices[face[0][0]-1],modelMatrix)
+            const B = this.glTransformVertex(this.obj.vertices[face[1][0]-1],modelMatrix)
+            const C = this.glTransformVertex(this.obj.vertices[face[2][0]-1],modelMatrix)
+
+            this.triangles.push(new Triangle(A,B,C,material))
+        }
+
+    }
+
+    ray_intersect(orig,dir){
+        let intersect = null
+        let closest = Infinity
+
+        for (let triangle of this.triangles){
+            const inter = triangle.ray_intersect(orig,dir)
+            if (inter){
+                if (inter.distancia < closest){
+                    closest = inter.distancia
+                    intersect = inter
+                }
+            }
+        }
+        if (intersect === null){
+            return null
+        }   
+        return new Intersect(this,closest,intersect.punto,intersect.normal,[0,0])
+    }
+
+    glTransformVertex(vertex,modelMatrix){
+        const gl_vertex = [vertex[0],vertex[1],vertex[2],1]
+        const new_vertex = producto_matriz_vector(modelMatrix,gl_vertex)
+
+        const res = [new_vertex[0]/new_vertex[3],
+                    new_vertex[1]/new_vertex[3],
+                    new_vertex[2]/new_vertex[3]]
+        return res
+    }
+
+    glCreateObjectMatrix(translate,scale,rotate){
+        const translation = [[1,0,0,translate[0]],
+                            [0,1,0,translate[1]],
+                            [0,0,1,translate[2]],
+                            [0,0,0,1]]
+
+        const rotation = this.glCreateRotationMatrix(...rotate)
+
+        const scaling = [[scale[0],0,0,0],
+                        [0,scale[1],0,0],
+                        [0,0,scale[2],0],
+                        [0,0,0,1]]
+
+        const tr = productos_matrices(translation,rotation)
+        const trs = productos_matrices(tr,scaling)
+
+        return trs
+    }
+
+    glCreateRotationMatrix(pit, ya, rol){
+        const pitch = (Math.PI/180)*pit
+        const yaw = (Math.PI/180)*ya
+        const roll = (Math.PI/180)*rol
+
+
+        const pitchMatrix = [[1,0,0,0],
+                            [0,Math.cos(pitch),-Math.sin(pitch),0],
+                            [0,Math.sin(pitch),Math.cos(pitch),0],
+                            [0,0,0,1]]
+        const yawMatrix = [[Math.cos(yaw),0,Math.sin(yaw),0],
+                            [0,1,0,0],
+                            [-Math.sin(yaw),0,Math.cos(yaw),0],
+                            [0,0,0,1]]
+        const rollMatrix = [[Math.cos(roll),-Math.sin(roll),0,0],
+                            [Math.sin(roll),Math.cos(roll),0,0],
+                            [0,0,1,0],
+                            [0,0,0,1]]
+        return productos_matrices(productos_matrices(pitchMatrix,yawMatrix),rollMatrix)
+    }
+
+}
+
+export {Sphere,Material,Plane,AABB,Triangle,Object3D}
