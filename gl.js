@@ -97,10 +97,10 @@ class Raytracer {
     //console.log(x,y,crl)
     if((this.min_width<=y<=this.mx_width)&&(this.min_height<=x<=this.mx_height)){
       if(crl!==null){
-        this.pixels[y][x] = crl
+        this.pixels[x][y] = crl
       }else{
 
-        this.pixels[y][x] = this.currentColor
+        this.pixels[x][y] = this.currentColor
       }
       
     }
@@ -225,8 +225,8 @@ class Raytracer {
     const t = Math.tan((this.fov * Math.PI/180)/2)*this.nearPlane
     const r = t* this.mx_width/this.mx_height
     //console.log(t,r)
-    for (var x = this.min_width; x < this.mx_width+1; x++) {
-      for (var y = this.min_height; y < this.mx_height+1; y++) {
+    for (var y = this.min_height; y < this.mx_height+1; y++){
+      for (var x = this.min_width; x < this.mx_width+1; x++){
         // Pasar de coordenadas de ventana a coordenadas 
         // NDC (-1 a 1)
         const Px = (((x+0.5-this.min_width)/(this.mx_width-this.min_width)) *2 -1) *r
@@ -243,73 +243,6 @@ class Raytracer {
     }
   }
 
-  glPoint_VP(ndcx, ndcy,crl=null){
-    console.log("SSZ",ndcx,ndcy,crl)
-
-    const x = (ndcx+1) * ((this.mx_width-this.min_width)/2)+ this.min_width
-    const y = (ndcy+1) * ((this.mx_height-this.min_height)/2)+ this.min_height
-  
-    const fx= Math.round(x)
-    const fy= Math.round(y)
-    console.log("FX",fx,fy)
-    if(crl){
-
-      this.glPoint(fx,fy,crl)
-    }else{
-
-      this.glPoint(fx,fy)
-    }
-  }
-
-  glLine(x1,y1,x2,y2,crl=null){
-    const dx = x2-x1;
-    const dy = y2-y1;
-    const d = Math.abs(dx)>Math.abs(dy)?Math.abs(dx):Math.abs(dy);
-    const sx = dx/d;
-    const sy = dy/d;
-    let x = x1;
-    let y = y1;
-    for(let i=0;i<d;i++){
-      this.glPoint(parseInt(y),parseInt(x),crl)
-      x+=sx;
-      y+=sy;
-    }
-  }
-
-  boundaries(x,y,poly){
-    const num = poly.length
-    let j = num -1
-    let c = false
-
-    for (let i = 0; i < num; i++) {
-      if(x===poly[i][0] && y===poly[i][1]){
-        return true
-      }   
-      
-      if((poly[i][1]>y != (poly[j][1]>y))){
-        const slope = (x-poly[i][0])*(poly[j][1]-poly[i][1]) - (poly[j][0]-poly[i][0])*(y-poly[i][1])
-        if(slope === 0){
-          return true
-        }
-        if((slope < 0)!= (poly[j][1]<poly[i][1])){
-          c = !c
-        } 
-      }
-      j = i
-    }
-    return c
-  }
-
-  glFill(poly,clr=null){
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        if (this.boundaries(i,j,poly)){
-          this.glPoint(j,i,clr)
-        }
-      }
-      
-    }
-  }
 
   glFinish(filename){
     const buffer = Buffer.alloc(14+40+(this.width*this.height*3));
@@ -343,8 +276,8 @@ class Raytracer {
     buffer.writeUInt32LE(0, 50);
 
     let byteIndex = 54
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++){
         buffer.writeUInt8(this.pixels[x][y][0], byteIndex++);
         buffer.writeUInt8(this.pixels[x][y][1], byteIndex++);
         buffer.writeUInt8(this.pixels[x][y][2], byteIndex++);

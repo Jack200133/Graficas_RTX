@@ -218,6 +218,11 @@ class Object3D{
             const C = this.glTransformVertex(this.obj.vertices[face[2][0]-1],modelMatrix)
 
             this.triangles.push(new Triangle(A,B,C,material))
+
+            if (face.length > 3){
+                const D = this.glTransformVertex(this.obj.vertices[face[3][0]-1],modelMatrix)
+                this.triangles.push(new Triangle(A,C,D,material))
+            }
         }
 
     }
