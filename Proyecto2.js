@@ -7,8 +7,8 @@ import {AmbientLight,DirectionalLight,PointLight} from './lights.js'
 const OPAQUE = 0
 const REFLECTIVE = 1
 const TRANSPARENT = 2
-const width = 2000
-const height =2000
+const width = 4000
+const height =4000
 //Materiales
 
 const laeves = new Material([0.9,0.9,0.9],64,TRANSPARENT,1,Texture('lea'))
@@ -37,7 +37,7 @@ rtx.lights.push(new AmbientLight(0.1))
 rtx.lights.push(new PointLight([0.5,0.30,0]))
 rtx.lights.push(new DirectionalLight([1,1,1],0.9))
 
-rtx.scena.push(new Object3D('sword',[0,0,-10],[0.1,0.1,0.1],[45,0,0],blue))
+//rtx.scena.push(new Object3D('sword',[0,0,-10],[0.1,0.1,0.1],[45,0,0],blue))
 
 rtx.scena.push(new AABB([-7,-4,-30],[5,5,5],log))
 rtx.scena.push(new AABB([-7,1,-30],[5,5,5],log))
